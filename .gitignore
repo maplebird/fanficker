@@ -1,0 +1,7 @@
+.idea
+.idea/**
+*.pdf
+*.epub
+*.mobi
+*.html
+.DS_Store
