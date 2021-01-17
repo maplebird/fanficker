@@ -36,6 +36,14 @@ def save_file(filename, output):
     f.close()
 
 
+def build_filename(url):
+    parsed = request.urlparse(url)
+    # Splitting this into multiple lines for readability
+    thread_name = parsed.path.rstrip('/').split('/')[-1]    # Remove slashes from path
+    thread_name = thread_name.split('.')[0]                 # Remove numeric thread ID
+    return thread_name + '.html'
+
+
 def build_html_base(url, metadata):
     soup = get_soup(url)
     head = str(soup.head)
@@ -51,24 +59,46 @@ def build_html_base(url, metadata):
     return base
 
 
-def build_chapter_html(chapter):
+def build_table_of_contents(all_chapter_data):
+    toc = """
+<h2>Table of Contents</h2>
+"""
+    counter = 0
+    for chapter in all_chapter_data:
+        bookmark = '\n<li><a href="#bookmark{counter}">{name}</a></li>'.format(
+            counter=counter, name=chapter['title']
+        )
+        toc += bookmark
+        counter += 1
+
+    return toc
+
+
+def build_chapter_html(chapter, counter=0):
     chapter_html = """
 <hr>
 <br>
-<h2>{name}</h2>
+<h2 id="bookmark{counter}">{name}</h2>
 <br><br>
 {body}
 <br><br>
-""".format(name=chapter['title'], body=chapter['body'])
+""".format(counter=counter, name=chapter['title'], body=chapter['body'])
     return chapter_html
 
 
-def build_filename(url):
-    parsed = request.urlparse(url)
-    # Splitting this into multiple lines for readability
-    thread_name = parsed.path.rstrip('/').split('/')[-1]    # Remove slashes from path
-    thread_name = thread_name.split('.')[0]                 # Remove numeric thread ID
-    return thread_name + '.html'
+def build_story_body(all_chapter_data):
+    body = ""
+
+    for chapter in all_chapter_data:
+        print('Downloading story content for chapter titled "{}"'.format(chapter['title']))
+        chapter['body'] = get_post_text(chapter['url'])
+
+    counter = 0
+    for chapter in all_chapter_data:
+        body += build_chapter_html(chapter, counter)
+        counter += 1
+
+    return body
 
 
 # Generate base forum URL from full link
@@ -128,16 +158,10 @@ def main():
     story_metadata = get_story_metadata(threadmarks_url)
 
     html_base = build_html_base(thread_url, story_metadata)
-    html_body = ""
-
-    for chapter in all_chapter_data:
-        print('Downloading story content for chapter titled "{}"'.format(chapter['title']))
-        chapter['body'] = get_post_text(chapter['url'])
-
-    for chapter in all_chapter_data:
-        html_body += build_chapter_html(chapter)
-
-    output = html_base + html_body
+    toc = build_table_of_contents(all_chapter_data)
+    story_body = build_story_body(all_chapter_data
+                                  )
+    output = html_base + toc + story_body
     save_file(filename, output)
 
 
