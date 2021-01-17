@@ -55,51 +55,6 @@ def build_html(metadata, chapters):
     return html
 
 
-
-# def build_html_base(url, metadata):
-#     soup = get_soup(url)
-#     head = str(soup.head)
-#     title = metadata['title']
-#     author = metadata['author']
-#
-#     fic_header_html = """
-# <h1>{title}</h1>
-# <h2>By: {author}</h2>
-# """.format(title=title, author=author)
-#
-#     base = head + fic_header_html
-#     return base
-
-
-# def build_table_of_contents(chapters):
-#     toc = """
-# <ul class="toc">
-# <h2>Table of Contents</h2>
-# """
-#     # Arrays start at 1. Fight me.
-#     counter = 1
-#     for chapter in chapters:
-#         bookmark = '\n<li><a href="#threadmark-{counter}">{name}</a></li>'.format(
-#             counter=counter, name=chapter['title']
-#         )
-#         toc += bookmark
-#         counter += 1
-#
-#     toc += '\n</ul>'
-#
-#     return toc
-
-#
-# def build_chapter_html(chapter, counter=1):
-#     chapter_html = """
-# <hr><br>
-# <h2 id="threadmark-{counter}">{name}</h2>
-# <br><br>
-# {body}
-# <br><br>
-# """.format(counter=counter, name=chapter['title'], body=chapter['body'])
-#     return chapter_html
-
 # Mutates chapters var by adding chapter body for each.
 def build_story_body(chapters):
     for chapter in chapters:
@@ -110,12 +65,15 @@ def build_story_body(chapters):
 
 
 # Generate base forum URL from full link
+# Required in a few places to correctly use relative links
 def get_base_url(url):
     parsed = request.urlparse(url)
     base_url = parsed.scheme + '://' + parsed.netloc
     return base_url
 
 
+# Analyze /threadmarks page for author and story information.
+# Good chance for this to break into little pieces.
 def get_story_metadata(threadmarks_url):
     soup = get_soup(threadmarks_url)
     base_url = get_base_url(threadmarks_url)
@@ -133,6 +91,7 @@ def get_story_metadata(threadmarks_url):
     return metadata
 
 
+# Pull down /threadmarks to get a list of all the chapters to download
 def parse_threadmarks(threadmarks_url):
     base_url = get_base_url(threadmarks_url)
     soup = get_soup(threadmarks_url)
@@ -141,7 +100,10 @@ def parse_threadmarks(threadmarks_url):
     # This is the closest HTML structure to the threadmark link that I can search for without pulling in extra elements
     soup = soup.findAll("div", {"class": "structItem-title threadmark_depth0"})
 
-    counter = 1
+    # Loop through all threadmark elements and pull out preview link
+    # Preview link points to individual post so don't need to pull down half the thread each time
+    # Counter is used to generate table of contents links later.
+    threadmark_counter = 1
     for chapter in soup:
         chapter_metadata = {}
         link = chapter.findAll("a")[0]              # Surprisingly this is way faster than calling .a method on chapter soup
@@ -149,10 +111,10 @@ def parse_threadmarks(threadmarks_url):
 
         chapter_metadata['title'] = link.get_text()
         chapter_metadata['url'] = base_url + path
-        chapter_metadata['threadmark'] = counter    # Set up a threadmark counter for ToC
+        chapter_metadata['threadmark'] = threadmark_counter    # Set up a threadmark counter for ToC
 
         chapters.append(chapter_metadata)
-        counter +=1
+        threadmark_counter +=1
 
     return chapters
 
@@ -166,14 +128,10 @@ def main():
 
     chapters = parse_threadmarks(threadmarks_url)
     story_metadata = get_story_metadata(threadmarks_url)
-
-    # html_base = build_html_base(thread_url, story_metadata)
-    # toc = build_table_of_contents(chapters)
-
     chapters = build_story_body(chapters)
 
+    # Generate HTML and write to file.
     html = build_html(story_metadata, chapters)
-
     save_file(filename, html)
 
 
