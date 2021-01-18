@@ -1,30 +1,37 @@
 class DownloadStoryJob < ApplicationJob
   queue_as :default
 
-  def perform(thread_url)
-    Rails.logger.info(thread_url)
-    url = thread_url.chomp('/')
-    @story = Story.find_by(thread_url: url)
+  def perform(story)
+    @story = story
+    url = @story.thread_url.chomp('/')
+    Rails.logger.info(url)
 
     Rails.logger.info("[StoryDownload] Downloading story at URL #{url}")
 
-    chapters = parse_threadmarks(url)
-    Rails.logger.info(chapters)
+    chapter_data = parse_threadmarks(url)
+    Rails.logger.info(chapter_data)
 
     # This means a URL was passed which does not have any threadmarks so nothing can be downloaded.
-    if chapters.empty?
+    if chapter_data.empty?
       Rails.logger.error("[StoryDownload] No story with threadmarks was found at #{url}")
       @story.destroy
       return
     end
 
-    metadata = get_story_metadata(url)
-    Rails.logger.info("[StoryDownload] Author metadata: #{metadata}")
+    set_story_metadata(url)
+    Rails.logger.info("[StoryDownload] Author metadata: #{@metadata}")
 
-    filename = build_filename(thread_url)
-    Rails.logger.info("[StoryDownload] Saving to file #{filename}")
+    # filename = build_filename(url)
+    # Rails.logger.info("[StoryDownload] Saving to file #{filename}")
 
-    chapters = build_story_body(chapters)
+    @chapter_data = build_story_body(chapter_data)
+
+  end
+
+  def persist_chapters
+    @chapter_data.each do |ch|
+      puts ch[:title]
+    end
   end
 
   def parse_threadmarks(url)
@@ -50,20 +57,18 @@ class DownloadStoryJob < ApplicationJob
     chapters
   end
 
-  def get_story_metadata(url)
+  def set_story_metadata(url)
     url += '/threadmarks'
     doc = get_doc(url)
     base_url = base_url(url)
-    metadata = {}
-
-    metadata[:title] = doc.search('.threadmarkListingHeader-name').text.strip
-    metadata[:description] = doc.search('.threadmarkListingHeader-extraInfoChild').search('.bbWrapper').text
 
     author = doc.search('.username').first
-    metadata[:author] = author.text
-    metadata[:author_profile] = base_url + author['href']
 
-    metadata
+    @story.author = author.text
+    @story.author_profile = base_url + author['href']
+    @story.title = doc.search('.threadmarkListingHeader-name').text.strip
+    @story.description = doc.search('.threadmarkListingHeader-extraInfoChild').search('.bbWrapper').text
+    @story.save
   end
 
   def build_story_body(chapters)
@@ -106,7 +111,4 @@ class DownloadStoryJob < ApplicationJob
     Rails.logger.error("[StoryDownload] Could not open link URL at #{url}")
     false
   end
-
-
-
 end

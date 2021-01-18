@@ -4,8 +4,9 @@ class CreateStories < ActiveRecord::Migration[6.0]
       t.string :thread_url
       t.string :title
       t.string :author
-      t.integer :chapters
-      t.string :file_location
+      t.string :author_profile
+      t.integer :chapter_count
+      t.text :description
       t.timestamps
     end
 

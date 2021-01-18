@@ -23,7 +23,9 @@
     <% @stories.each do |story| %>
     <div class='cell'>
       <ul>
-        <li><i><%= link_to(story.title, story.thread_url) %></i> by <%= story.author %><br></li>
+        <li><i><b><%= story.title %></b></i></li>
+        <li>By <%= story.author %></li>
+        <li><%= link_to "Read here" "/view/#{story.id}"  %></li>
       </ul>
     </div>
     <% end %>

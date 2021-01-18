@@ -10,17 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_18_142655) do
+ActiveRecord::Schema.define(version: 2021_01_18_204916) do
+
+  create_table "chapters", force: :cascade do |t|
+    t.string "thread_url"
+    t.integer "threadmark"
+    t.text "body"
+    t.index ["id"], name: "index_chapters_on_id"
+    t.index ["thread_url"], name: "index_chapters_on_thread_url"
+  end
 
   create_table "stories", force: :cascade do |t|
     t.string "thread_url"
     t.string "title"
     t.string "author"
-    t.integer "chapters"
-    t.string "file_location"
+    t.string "author_profile"
+    t.integer "chapter_count"
+    t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["thread_url"], name: "index_stories_on_thread_url", unique: true
   end
 
+  add_foreign_key "chapters", "stories", column: "thread_url", on_delete: :cascade
 end

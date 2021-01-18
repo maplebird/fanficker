@@ -7,10 +7,10 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 Story.create(
-  title: "Test Story",
-  thread_url: "https://forums.spacebattles.com/threads/test-story.1234",
-  author: "Don Julio",
-  chapters: 5
+    title: "Test Story",
+    thread_url: "https://forums.spacebattles.com/threads/test-story.1234",
+    author: "Don Julio",
+    chapter_count: 5
 )
 
 Story.create(thread_url: "https://forums.spacebattles.com/threads/test-story.2345")
