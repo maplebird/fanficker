@@ -44,7 +44,7 @@ def build_filename(url):
 
 
 def build_html(metadata, chapters):
-    with open('template.j2.html') as f:
+    with open('template.html.j2') as f:
         template = Template(f.read())
 
     html = template.render(

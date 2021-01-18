@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8"/>
+    <title>{{ metadata.title }}</title>
+</head>
+
+<body>
+<h1>{{ metadata.title }}</h1>
+<h2>By: {{ metadata.author }}</h2>
+
+<h2>Table of Contents</h2>
+<ul class="toc">
+{% for chapter in chapters %}
+<li><a href='#threadmark-{{ chapter.threadmark }}'>{{ chapter.title }}</a></li>
+{% endfor %}
+</ul>
+
+{% for chapter in chapters %}
+<hr><br>
+<h2 id="threadmark-{{ chapter.threadmark }}">{{ chapter.title }}</h2>
+<br>
+{{ chapter.body }}
+<br><br>
+{% endfor %}
+</body>
+
+
+</html>
+
+
