@@ -1,5 +1,5 @@
 class Story < ApplicationRecord
-  has_many :chapters
+  has_many :chapters, foreign_key: :thread_url, class_name: 'Chapter'
 
   validates :thread_url, uniqueness: true, presence: true
 

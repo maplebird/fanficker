@@ -9,6 +9,16 @@
   body,h1 {font-family: "Raleway", sans-serif}
   body, html {height: 100%}
 </style>
+
+<head>
+  <title>Fanficker</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+  <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+</head>
+
 <body>
 
 <div class="bgimg w3-display-container w3-animate-opacity w3-text-white">
@@ -25,7 +35,7 @@
       <ul>
         <li><i><b><%= story.title %></b></i></li>
         <li>By <%= story.author %></li>
-        <li><%= link_to "Read here", "/view/#{story.id}"  %></li>
+        <li><%= link_to "Read here", "/stories/#{story.id}"  %></li>
       </ul>
     </div>
     <% end %>

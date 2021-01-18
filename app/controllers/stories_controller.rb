@@ -22,7 +22,9 @@ class StoriesController < ApplicationController
 
   def view
     @story = Story.find(params[:id])
-    @chapters = Chapters.find_by(thread_url: @story.thread_url)
+    Rails.logger.info("Constructing story #{@story.thread_url}")
+
+    @chapters = Chapter.where(thread_url: @story.id)
   end
 
   private

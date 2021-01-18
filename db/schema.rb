@@ -14,9 +14,10 @@ ActiveRecord::Schema.define(version: 2021_01_18_204916) do
 
   create_table "chapters", force: :cascade do |t|
     t.string "thread_url"
+    t.string "title"
     t.integer "threadmark"
     t.text "body"
-    t.index ["id"], name: "index_chapters_on_id"
+    t.index ["id", "threadmark"], name: "index_chapters_on_id_and_threadmark"
     t.index ["thread_url"], name: "index_chapters_on_thread_url"
   end
 
@@ -32,5 +33,4 @@ ActiveRecord::Schema.define(version: 2021_01_18_204916) do
     t.index ["thread_url"], name: "index_stories_on_thread_url", unique: true
   end
 
-  add_foreign_key "chapters", "stories", column: "thread_url", on_delete: :cascade
 end

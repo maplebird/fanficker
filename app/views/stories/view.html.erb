@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="view.css">
   <meta charset="utf-8"/>
   <title><%= @story.title %></title>
 </head>
@@ -14,15 +14,15 @@
 <h2>Table of Contents</h2>
 <ul class="toc">
   <% @chapters.each do |ch| %>
-  <li><a href='#threadmark-<%= ch[:threadmark] %>'><%= ch[:threadmark] %></a></li>
+  <li><a href='#threadmark-<%= ch.threadmark %>'><%= ch.title %></a></li>
   <% end %>
 </ul>
 
 <% @chapters.each do |ch| %>
 <hr><br>
-<h2 id="threadmark-<%= ch[:threadmark] %>"><%= ch[:title] %></h2>
+<h2 id="threadmark-<%= ch.threadmark %>"><%= ch.title %></h2>
 <br>
-<%= ch[:body] %>
+<%= ch.body.html_safe %>
 <br><br>
 <% end %>
 </body>

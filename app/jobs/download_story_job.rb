@@ -3,39 +3,56 @@ class DownloadStoryJob < ApplicationJob
 
   def perform(story)
     @story = story
-    url = @story.thread_url.chomp('/')
-    Rails.logger.info(url)
+    @thread_url = @story.thread_url.chomp('/')
+    Rails.logger.info(@thread_url)
 
-    Rails.logger.info("[StoryDownload] Downloading story at URL #{url}")
+    Rails.logger.info("[StoryDownload] Downloading story at URL #{@thread_url}")
 
-    chapter_data = parse_threadmarks(url)
+    chapter_data = parse_threadmarks
     Rails.logger.info(chapter_data)
 
     # This means a URL was passed which does not have any threadmarks so nothing can be downloaded.
     if chapter_data.empty?
-      Rails.logger.error("[StoryDownload] No story with threadmarks was found at #{url}")
+      Rails.logger.error("[StoryDownload] No story with threadmarks was found at #{@thread_url}")
       @story.destroy
       return
     end
 
-    set_story_metadata(url)
-    Rails.logger.info("[StoryDownload] Author metadata: #{@metadata}")
+    set_story_metadata
 
     # filename = build_filename(url)
     # Rails.logger.info("[StoryDownload] Saving to file #{filename}")
 
     @chapter_data = build_story_body(chapter_data)
 
+    persist_chapters
+
   end
 
   def persist_chapters
     @chapter_data.each do |ch|
-      puts ch[:title]
+      Rails.logger.info(thread_url: @thread_url, threadmark: ch[:threadmark])
+
+      if Chapter.find_by(thread_url: @thread_url, threadmark: ch[:threadmark])
+        Rails.logger.info("[StoryDownload] Updating chapter #{ch[:title]}")
+        chapter = Chapter.find_by(thread_url: @thread_url, threadmark: ch[:threadmark])
+      else
+        Rails.logger.info("[StoryDownload] Persisting chapter #{ch[:title]}")
+        chapter = Chapter.new
+      end
+
+      chapter.story = @story
+      chapter.thread_url = @thread_url
+      chapter.title = ch[:title]
+      chapter.threadmark = ch[:threadmark]
+      chapter.body = ch[:body]
+
+      chapter.save!
     end
   end
 
-  def parse_threadmarks(url)
-    url += '/threadmarks'
+  def parse_threadmarks
+    url = @thread_url + '/threadmarks'
     base_url = base_url(url)
     doc = get_doc(url)
     doc = doc.css("[class='structItem-title threadmark_depth0']")
@@ -57,8 +74,8 @@ class DownloadStoryJob < ApplicationJob
     chapters
   end
 
-  def set_story_metadata(url)
-    url += '/threadmarks'
+  def set_story_metadata
+    url = @thread_url + '/threadmarks'
     doc = get_doc(url)
     base_url = base_url(url)
 
