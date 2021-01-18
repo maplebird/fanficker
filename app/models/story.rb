@@ -2,8 +2,6 @@ class Story < ApplicationRecord
   has_many :chapters
 
   validates :thread_url, uniqueness: true, presence: true
-  after_create :update_created, :update_timestamp
-  after_update :update_timestamp
 
   attr_accessor :refresh_story
   after_commit :download_story, on: :create
@@ -12,7 +10,7 @@ class Story < ApplicationRecord
   private
 
   def download_story
-    DownloadStoryJob.perform_now(self)
+    DownloadStoryJob.perform_later(self)
   end
 
   def update_created

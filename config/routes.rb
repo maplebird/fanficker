@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :chapter_data
   root to: 'stories#new'
 
   get '/' => 'stories#new'
