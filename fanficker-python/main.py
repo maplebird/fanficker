@@ -114,7 +114,7 @@ def parse_threadmarks(threadmarks_url):
         chapter_metadata['threadmark'] = threadmark_counter    # Set up a threadmark counter for ToC
 
         chapters.append(chapter_metadata)
-        threadmark_counter +=1
+        threadmark_counter += 1
 
     return chapters
 

@@ -2,31 +2,32 @@ class DownloadStoryJob < ApplicationJob
   queue_as :default
 
   def perform(params)
-    thread_url = params[:thread_url].chomp('/')
-    threadmarks_url = thread_url + '/threadmarks'
+    url = params[:thread_url].chomp('/')
+    @story = Story.find_by(thread_url: thread_url)
 
-    Rails.logger.info("Downloading story at URL #{thread_url}")
+    Rails.logger.info("[StoryDownload] Downloading story at URL #{url}")
 
-    chapters = parse_threadmarks(threadmarks_url)
+    chapters = parse_threadmarks(url)
     Rails.logger.info(chapters)
 
-    return if chapters.empty?
-
-    if Story.exists?(thread_url: thread_url)
-      story = Story.find_by(thread_url: thread_url)
-      unless story.chapters.nil? or story.file_location.nil?
-        return if story.chapters == chapters.count
-      end
+    # This means a URL was passed which does not have any threadmarks so nothing can be downloaded.
+    if chapters.empty?
+      Rails.logger.error("[StoryDownload] No story with threadmarks was found at #{url}")
+      @story.destroy
+      return
     end
 
-    metadata = get_story_metadata(threadmarks_url)
-    Rails.logger.info("Author metadata: #{metadata}")
+    metadata = get_story_metadata(url)
+    Rails.logger.info("[StoryDownload] Author metadata: #{metadata}")
 
     filename = build_filename(thread_url)
-    Rails.logger.info("Saving to file #{filename}")
+    Rails.logger.info("[StoryDownload] Saving to file #{filename}")
+
+    chapters = build_story_body(chapters, metadata[:title])
   end
 
   def parse_threadmarks(url)
+    url += '/threadmarks'
     base_url = base_url(url)
     doc = get_doc(url)
     doc = doc.css("[class='structItem-title threadmark_depth0']")
@@ -47,10 +48,13 @@ class DownloadStoryJob < ApplicationJob
       chapters.append(metadata)
     end
 
+    @story.update(chapters: chapters.count)
+
     chapters
   end
 
   def get_story_metadata(url)
+    url += '/threadmarks'
     doc = get_doc(url)
     base_url = base_url(url)
     metadata = {}
@@ -62,10 +66,28 @@ class DownloadStoryJob < ApplicationJob
     metadata[:author] = author.text
     metadata[:author_profile] = base_url + author['href']
 
+    @story.update(author: metadata[:author], title: metadata[:title])
+
     metadata
   end
-    
-  private
+
+  def build_story_body(chapters, title)
+    chapters.each do |ch|
+      Rails.logger.info("[StoryDownload] Downloading #{ch[:title]}")
+      ch[:body] = get_post_text(ch[:url])
+    end
+
+    chapters
+  end
+
+  def get_post_text(url)
+    doc = get_doc(url)
+    body = doc.search('.bbWrapper')
+
+    'Could not get chapter text.' if body.empty? || body.nil?
+
+    body.to_s
+  end
 
   def build_filename(url)
     parsed = parse_url(url)
@@ -85,6 +107,11 @@ class DownloadStoryJob < ApplicationJob
 
   def get_doc(url)
     Nokogiri::HTML(URI.open(url))
+  rescue OpenURI::HTTPError
+    Rails.logger.error("[StoryDownload] Could not open link URL at #{url}")
+    false
   end
+
+
 
 end
