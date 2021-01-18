@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class StoriesControllerTest < ActionDispatch::IntegrationTest
+class DownloadStoryJobTest < ActiveJob::TestCase
   # test "the truth" do
   #   assert true
   # end

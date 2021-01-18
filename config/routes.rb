@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
+  root 'story#new'
 
-  get 'new' => 'new#index'
+  get 'index' => 'story#index'
+  post 'story' => 'story#create'
 
-  get 'stories' => 'stories#index'
 end

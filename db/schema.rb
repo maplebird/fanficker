@@ -13,13 +13,14 @@
 ActiveRecord::Schema.define(version: 2021_01_18_095826) do
 
   create_table "stories", force: :cascade do |t|
+    t.string "thread_url"
     t.string "title"
     t.string "author"
-    t.string "url"
     t.integer "chapters"
-    t.string "location"
+    t.string "file_location"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["thread_url"], name: "index_stories_on_thread_url", unique: true
   end
 
 end
