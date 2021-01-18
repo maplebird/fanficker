@@ -1,9 +1,10 @@
 class DownloadStoryJob < ApplicationJob
   queue_as :default
 
-  def perform(params)
-    url = params[:thread_url].chomp('/')
-    @story = Story.find_by(thread_url: thread_url)
+  def perform(thread_url)
+    Rails.logger.info(thread_url)
+    url = thread_url.chomp('/')
+    @story = Story.find_by(thread_url: url)
 
     Rails.logger.info("[StoryDownload] Downloading story at URL #{url}")
 
@@ -23,7 +24,7 @@ class DownloadStoryJob < ApplicationJob
     filename = build_filename(thread_url)
     Rails.logger.info("[StoryDownload] Saving to file #{filename}")
 
-    chapters = build_story_body(chapters, metadata[:title])
+    chapters = build_story_body(chapters)
   end
 
   def parse_threadmarks(url)
@@ -31,24 +32,20 @@ class DownloadStoryJob < ApplicationJob
     base_url = base_url(url)
     doc = get_doc(url)
     doc = doc.css("[class='structItem-title threadmark_depth0']")
-    threadmark_counter = 1  # Arrays start at 1 if you're doing table of contents
     chapters = []
 
     return if doc.empty?
 
-    doc.each do |ch|
+    doc.each_with_index do |ch, index|
       metadata = {}
       link = ch.at_css('a')
 
       metadata[:title] = link.text
       metadata[:url] = base_url + ch.at_css('a')['data-preview-url']
-      metadata[:threadmark] = threadmark_counter
+      metadata[:threadmark] = index + 1
 
-      threadmark_counter += 1
       chapters.append(metadata)
     end
-
-    @story.update(chapters: chapters.count)
 
     chapters
   end
@@ -66,12 +63,10 @@ class DownloadStoryJob < ApplicationJob
     metadata[:author] = author.text
     metadata[:author_profile] = base_url + author['href']
 
-    @story.update(author: metadata[:author], title: metadata[:title])
-
     metadata
   end
 
-  def build_story_body(chapters, title)
+  def build_story_body(chapters)
     chapters.each do |ch|
       Rails.logger.info("[StoryDownload] Downloading #{ch[:title]}")
       ch[:body] = get_post_text(ch[:url])

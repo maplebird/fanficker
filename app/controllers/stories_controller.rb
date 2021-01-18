@@ -8,14 +8,19 @@ class StoriesController < ApplicationController
   end
 
   def create
-    if valid_url?(submit_story_params[:thread_url])
-      Rails.logger.info("Submitted with URL: #{submit_story_params[:thread_url]}")
-      @story = DownloadStoryJob.perform_now(submit_story_params)
+    params = submit_story_params
+    return unless valid_url?(params[:thread_url])
+
+    @story = Story.new(params)
+
+    if @story.save
+      Rails.logger.info("[NewStory] Submitted with URL: #{params[:thread_url]}")
       redirect_to '/index'
     else
-      Rails.logger.info("Invalid URL: #{submit_story_params[:thread_url]}")
+      Rails.logger.info("[NewStory] Invalid URL: #{params[:thread_url]}")
       redirect_to '/new?invalidurl'
     end
+
   end
 
   private
