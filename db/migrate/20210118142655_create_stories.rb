@@ -7,10 +7,8 @@ class CreateStories < ActiveRecord::Migration[6.0]
       t.integer :chapters
       t.string :file_location
       t.timestamps
-
     end
 
     add_index(:stories, :thread_url, unique: true)
-
   end
 end

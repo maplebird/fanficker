@@ -10,35 +10,44 @@
   body, html {height: 100%}
 </style>
 <body>
+
+<div class="bgimg w3-display-container w3-animate-opacity w3-text-white">
+  <div class="w3-display-topleft w3-padding-large w3-xlarge">
+    Fanficker
+    <h5>XenForo Story Downloader</h5>
+  </div>
+</div>
+
 <div class="w3-display-middle">
   <div class='table'>
     <div class='cell'>
       <%= form_for(@story) do |f| %>
-        <label>Entry story URL:</label>
         <div class="field">
+          <%= f.label "Thread URL" %><br>
           <%= f.text_field :thread_url %><br>
         </div>
         <div class="submit">
           <%= f.submit "Submit" %>
         </div>
-    <% end %>
-
-      </form>
+      <% end %>
+    </div>
+    <div class='cell' id='invalidurl'>
+      <p style="color:red">Error: invalid URL.</p>
     </div>
   </div>
 </div>
 
-<!--
-  <div class="w3-display-middle">
-    <div class="cent">
-
-      <h1 class="w3-jumbo w3-animate-top">COMING SOON</h1>
-      <hr class="w3-border-grey" style="margin:auto;width:40%">
-      <p class="w3-large w3-center">35 days left</p>
-    </div>
-  </div>
-  -->
-</div>
 
 </body>
+
+<script type="text/javascript">
+    var url = window.location.href;
+    var msg = document.getElementById('invalidurl');
+    if( url.search( 'invalidurl' ) > 0 ) {
+        msg.style.display = 'block';
+    } else{
+        msg.style.display = 'none'
+    }
+</script>
+
 </html>

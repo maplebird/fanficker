@@ -11,11 +11,20 @@
 </style>
 <body>
 
+<div class="bgimg w3-display-container w3-animate-opacity w3-text-white">
+  <div class="w3-display-topleft w3-padding-large w3-xlarge">
+    Fanficker
+    <h5>XenForo Story Downloader</h5>
+  </div>
+</div>
+
 <div class="w3-display-middle">
   <div class='table'>
     <% @stories.each do |story| %>
     <div class='cell'>
-      Story thread URL: <%= story.thread_url %>
+      <ul>
+        <li><i><%= link_to(story.title, story.thread_url) %></i> by <%= story.author %><br></li>
+      </ul>
     </div>
     <% end %>
   </div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_18_095826) do
+ActiveRecord::Schema.define(version: 2021_01_18_142655) do
 
   create_table "stories", force: :cascade do |t|
     t.string "thread_url"
