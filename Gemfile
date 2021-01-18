@@ -55,3 +55,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Data storage
 gem 'activestorage'
+
+# Parsing
+gem 'nokogiri'
+gem 'open-uri'

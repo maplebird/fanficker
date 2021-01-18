@@ -22,3 +22,4 @@
 /doc/*.svg
 node_modules
 .generated_user_seeds
+.generators
