@@ -5,3 +5,20 @@
 *.mobi
 *.html
 .DS_Store
+
+# Development stuff
+/db/*.sqlite3
+/db/*.sqlite3-journal
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+*.swp
+/public/system/*
+/coverage/*
+/coverage/
+/doc/*.svg
+node_modules
+.generated_user_seeds
