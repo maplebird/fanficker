@@ -17,11 +17,15 @@
 </ul>
 
 <% @chapters.each do |ch| %>
-<hr><br>
-<h2 id="threadmark-<%= ch.threadmark %>"><%= ch.title %></h2>
-<br>
-<%= ch.body.html_safe %>
-<br><br>
+  <div class="w3-display-middle">
+    <div class='table'>
+      <hr><br>
+      <h2 id="threadmark-<%= ch.threadmark %>"><%= ch.title %></h2>
+      <br>
+      <%= ch.body.html_safe %>
+      <br><br>
+    </div>
+  </div>
 <% end %>
 </body>
 

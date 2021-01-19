@@ -41,8 +41,8 @@ class DownloadStoryJob < ApplicationJob
   def parse_threadmarks
     url = @thread_url + '/threadmarks'
     base_url = base_url(url)
-
     doc = get_doc(url)
+
     begin
       doc = doc.css("[class='structItem-title threadmark_depth0']")
     rescue NoMethodError
