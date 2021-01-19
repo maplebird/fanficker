@@ -5,60 +5,54 @@ class DownloadStoryJob < ApplicationJob
     @story = story
     @thread_url = @story.thread_url.chomp('/')
     Rails.logger.info(@thread_url)
-
     Rails.logger.info("[StoryDownload] Downloading story at URL #{@thread_url}")
 
-    chapter_data = parse_threadmarks
-    Rails.logger.info(chapter_data)
-
-    # This means a URL was passed which does not have any threadmarks so nothing can be downloaded.
-    if chapter_data.empty?
-      Rails.logger.error("[StoryDownload] No story with threadmarks was found at #{@thread_url}")
+    @chapters = parse_threadmarks
+    if @chapters.nil?
+      Rails.logger.error('[StoryDownload] Threadmarks page empty, cannot download story. Aborting.') if @chapters.nil?
       @story.destroy
       return
     end
 
     set_story_metadata
-
-    # filename = build_filename(url)
-    # Rails.logger.info("[StoryDownload] Saving to file #{filename}")
-
-    @chapter_data = build_story_body(chapter_data)
-
+    build_story_body
     persist_chapters
-
   end
 
   def persist_chapters
-    @chapter_data.each do |ch|
-      Rails.logger.info(thread_url: @thread_url, threadmark: ch[:threadmark])
+    @chapters.each do |ch|
+      filter = { story_id: @story.id, threadmark: ch[:threadmark] }
 
-      if Chapter.find_by(thread_url: @thread_url, threadmark: ch[:threadmark])
-        Rails.logger.info("[StoryDownload] Updating chapter #{ch[:title]}")
-        chapter = Chapter.find_by(thread_url: @thread_url, threadmark: ch[:threadmark])
-      else
-        Rails.logger.info("[StoryDownload] Persisting chapter #{ch[:title]}")
-        chapter = Chapter.new
-      end
+      chapter = Chapter.find_by(filter) ? Chapter.find_by(filter) : Chapter.new
 
-      chapter.story = @story
-      chapter.thread_url = @thread_url
-      chapter.title = ch[:title]
-      chapter.threadmark = ch[:threadmark]
-      chapter.body = ch[:body]
-
-      chapter.save!
+      Rails.logger.info("[StoryDownload] Persisting chapter #{ch[:title]}")
+      persist_chapter(chapter, ch)
     end
+  end
+
+  def persist_chapter(chapter, data)
+    chapter.story_id = @story.id
+    chapter.title = data[:title]
+    chapter.threadmark = data[:threadmark]
+    chapter.body = data[:body]
+    chapter.save!
   end
 
   def parse_threadmarks
     url = @thread_url + '/threadmarks'
     base_url = base_url(url)
-    doc = get_doc(url)
-    doc = doc.css("[class='structItem-title threadmark_depth0']")
-    chapters = []
 
-    return if doc.empty?
+    doc = get_doc(url)
+    begin
+      doc = doc.css("[class='structItem-title threadmark_depth0']")
+    rescue NoMethodError
+      Rails.logger.error('[StoryDownload] Threadmarks CSS element not present.')
+      return nil
+    end
+
+    puts 'this is also okay'
+
+    chapters = []
 
     doc.each_with_index do |ch, index|
       metadata = {}
@@ -88,13 +82,11 @@ class DownloadStoryJob < ApplicationJob
     @story.save
   end
 
-  def build_story_body(chapters)
-    chapters.each do |ch|
+  def build_story_body
+    @chapters.each do |ch|
       Rails.logger.info("[StoryDownload] Downloading #{ch[:title]}")
       ch[:body] = get_post_text(ch[:url])
     end
-
-    chapters
   end
 
   def get_post_text(url)
@@ -104,13 +96,6 @@ class DownloadStoryJob < ApplicationJob
     'Could not get chapter text.' if body.empty? || body.nil?
 
     body.to_s
-  end
-
-  def build_filename(url)
-    parsed = parse_url(url)
-    name = parsed.path.split('/').last
-    file = name.split('.')[0]  # Remove numeric thread ID
-    file + '.html'
   end
 
   def parse_url(url)

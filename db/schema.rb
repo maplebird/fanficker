@@ -10,15 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_18_204916) do
+ActiveRecord::Schema.define(version: 2021_01_19_001202) do
 
   create_table "chapters", force: :cascade do |t|
-    t.string "thread_url"
+    t.string "story_id"
     t.string "title"
     t.integer "threadmark"
     t.text "body"
     t.index ["id", "threadmark"], name: "index_chapters_on_id_and_threadmark"
-    t.index ["thread_url"], name: "index_chapters_on_thread_url"
+    t.index ["story_id"], name: "index_chapters_on_story_id"
   end
 
   create_table "stories", force: :cascade do |t|

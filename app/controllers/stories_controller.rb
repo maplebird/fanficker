@@ -24,7 +24,7 @@ class StoriesController < ApplicationController
     @story = Story.find(params[:id])
     Rails.logger.info("Constructing story #{@story.thread_url}")
 
-    @chapters = Chapter.where(thread_url: @story.id)
+    @chapters = Chapter.where(story_id: @story.id)
   end
 
   private
@@ -34,14 +34,14 @@ class StoriesController < ApplicationController
   end
 
   def create_or_update_story(params)
-    thread_url = params[:thread_url]
-    thread_url = thread_url.chomp('/')
+    thread_url = params[:thread_url].chomp('/')
 
     if Story.find_by(thread_url: thread_url)
       story = Story.find_by(thread_url: thread_url)
       story.refresh_story = true
     else
       story = Story.create(thread_url: thread_url)
+      story.refresh_story = true
     end
 
     story.save
