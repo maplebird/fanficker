@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_19_001202) do
+ActiveRecord::Schema.define(version: 2021_01_19_090052) do
 
   create_table "chapters", force: :cascade do |t|
     t.string "story_id"
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 2021_01_19_001202) do
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "epub"
     t.index ["thread_url"], name: "index_stories_on_thread_url", unique: true
   end
 

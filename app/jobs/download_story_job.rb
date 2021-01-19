@@ -5,7 +5,6 @@ class DownloadStoryJob < ApplicationJob
   def perform(story)
     @story = story
     @thread_url = @story.thread_url.chomp('/')
-    Rails.logger.info(@thread_url)
     Rails.logger.info("[StoryDownload] Downloading story at URL #{@thread_url}")
 
     @chapters = parse_threadmarks
@@ -20,7 +19,7 @@ class DownloadStoryJob < ApplicationJob
     @chapters.each do |ch|
       filter = { story_id: @story.id, threadmark: ch[:threadmark] }
 
-      chapter = Chapter.find_by(filter) ? Chapter.find_by(filter) : Chapter.new
+      chapter = Chapter.find_by(filter) || Chapter.new
 
       Rails.logger.info("[StoryDownload] Persisting chapter #{ch[:title]}")
       persist_chapter(chapter, ch)
