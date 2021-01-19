@@ -57,10 +57,11 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Data storage
 gem 'activestorage'
+gem 'pg', '~> 1.2'
 
 # Require old zip gem API for gepub to work
-gem 'zip-zip'
 gem 'gepub'
+gem 'zip-zip'
 
 # Parsing
 gem 'nokogiri'
