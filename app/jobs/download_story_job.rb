@@ -1,5 +1,6 @@
 class DownloadStoryJob < ApplicationJob
   queue_as :default
+  discard_on 'StoryDownloadError'
 
   def perform(story)
     @story = story
@@ -8,11 +9,7 @@ class DownloadStoryJob < ApplicationJob
     Rails.logger.info("[StoryDownload] Downloading story at URL #{@thread_url}")
 
     @chapters = parse_threadmarks
-    if @chapters.nil?
-      Rails.logger.error('[StoryDownload] Threadmarks page empty, cannot download story. Aborting.') if @chapters.nil?
-      @story.destroy
-      return
-    end
+    validate_chapters
 
     set_story_metadata
     build_story_body
@@ -105,6 +102,14 @@ class DownloadStoryJob < ApplicationJob
   def base_url(url)
     parsed = parse_url(url)
     parsed.scheme + '://' + parsed.host
+  end
+
+  def validate_chapters
+    return unless @chapters.nil?
+
+    Rails.logger.error('[StoryDownload] Threadmarks page empty, cannot download story. Aborting.')
+    @story.destroy
+    raise('StoryDownloadError')
   end
 
   def get_doc(url)
