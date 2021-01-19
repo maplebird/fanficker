@@ -112,9 +112,11 @@ class DownloadStoryJob < ApplicationJob
   end
 
   def get_doc(url)
-    Nokogiri::HTML(URI.open(url))
-  rescue OpenURI::HTTPError
-    Rails.logger.error("[StoryDownload] Could not open link URL at #{url}")
-    false
+    3.times do |i|
+      Nokogiri::HTML(URI.open(url))
+    rescue OpenURI::HTTPError
+      Rails.logger.error("[StoryDownload] Could not open link URL at #{url}")
+      i < 2 ? retry : false
+    end
   end
 end

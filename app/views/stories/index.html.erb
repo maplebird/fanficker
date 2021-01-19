@@ -36,7 +36,6 @@
         <li><i><b><%= story.title %></b></i></li>
         <li>By <%= story.author %></li>
         <li><%= link_to "Read here", "/stories/#{story.id}"  %></li>
-        <%= if story.epub %><li><%= link_to "Download ePub", story.epub %></li><%= end %>
       </ul>
     </div>
     <% end %>

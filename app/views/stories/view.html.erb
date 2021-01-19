@@ -11,12 +11,12 @@
 
 <h2>Table of Contents</h2>
 <ul class="toc">
-  <% @chapters.each do |ch| %>
+  <% @story.chapters.each do |ch| %>
   <li><a href='#threadmark-<%= ch.threadmark %>'><%= ch.title %></a></li>
   <% end %>
 </ul>
 
-<% @chapters.each do |ch| %>
+<% @story.chapters.each do |ch| %>
   <div class="w3-display-middle">
     <div class='table'>
       <hr><br>
