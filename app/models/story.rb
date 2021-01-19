@@ -3,7 +3,7 @@ class Story < ApplicationRecord
 
   before_validation :remove_trailing_slash
 
-  validates self[:thread_url], uniqueness: true, presence: true
+  validates :thread_url, uniqueness: true, presence: true
 
   attr_accessor :refresh_story
   after_commit :download_story, on: :create

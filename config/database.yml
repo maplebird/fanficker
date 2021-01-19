@@ -21,10 +21,11 @@ test:
   database: db/test.sqlite3
 
 production:
-  <<: *default
   adapter: postgresql
-  database: fanficker
+  database: <%= ENV.fetch("DATABASE_NAME", "fanficker") %>
   username: <%= ENV.fetch("DATABASE_USER", "postgres") %>
   password: <%= ENV.fetch("DATABASE_PASSWORD", "postgres") %>
   host: <%= ENV.fetch("DATABASE_HOST", "localhost") %>
-  port: 5432
+  port: <%= ENV.fetch("DATABASE_PORT", "5432") %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
