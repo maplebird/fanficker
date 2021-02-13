@@ -12,6 +12,9 @@
 
 ActiveRecord::Schema.define(version: 2021_01_19_090052) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "chapters", force: :cascade do |t|
     t.string "story_id"
     t.string "title"

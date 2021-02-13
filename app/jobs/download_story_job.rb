@@ -39,6 +39,10 @@ class DownloadStoryJob < ApplicationJob
     base_url = base_url(url)
     doc = get_doc(url)
 
+    puts doc.class.name
+
+    doc = doc.css("[class='structItem-title threadmark_depth0']")
+
     begin
       doc = doc.css("[class='structItem-title threadmark_depth0']")
     rescue NoMethodError
@@ -113,7 +117,7 @@ class DownloadStoryJob < ApplicationJob
 
   def get_doc(url)
     3.times do |i|
-      Nokogiri::HTML(URI.open(url))
+      return Nokogiri::HTML(URI.open(url))
     rescue OpenURI::HTTPError
       Rails.logger.error("[StoryDownload] Could not open link URL at #{url}")
       i < 2 ? retry : false

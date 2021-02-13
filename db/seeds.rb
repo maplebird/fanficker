@@ -13,4 +13,5 @@ Story.create(
     chapter_count: 5
 )
 
-Story.create(thread_url: "https://forums.spacebattles.com/threads/test-story.2345")
+empress = Story.create(thread_url: "https://forums.spacebattles.com/threads/empress-in-azeroth-drowtales-warcraft-crossover.905910/")
+# DownloadStoryJob.perform_now(empress)
