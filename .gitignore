@@ -25,4 +25,4 @@ node_modules
 .generated_user_seeds
 .generators
 
-converter.rb
+storage/*

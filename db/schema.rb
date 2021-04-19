@@ -54,7 +54,6 @@ ActiveRecord::Schema.define(version: 2021_04_19_174245) do
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "epub"
     t.boolean "download_complete"
     t.index ["thread_url"], name: "index_stories_on_thread_url", unique: true
   end

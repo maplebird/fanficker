@@ -16,5 +16,8 @@ module Fanficker
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
     config.active_storage.service = :local
+
+    old_logger = ActiveRecord::Base.logger
+    ActiveRecord::Base.logger = nil
   end
 end

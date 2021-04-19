@@ -2,8 +2,8 @@ class DownloadStoryJob < ApplicationJob
   queue_as :default
   discard_on 'StoryDownloadError'
 
-  def perform(story)
-    @story = story
+  def perform(story_id)
+    @story = Story.find(story_id)
     @thread_url = @story.thread_url.chomp('/')
     Rails.logger.info("[StoryDownload] Downloading story at URL #{@thread_url}")
 
@@ -40,19 +40,15 @@ class DownloadStoryJob < ApplicationJob
     url = @thread_url + '/threadmarks'
     base_url = base_url(url)
     doc = get_doc(url)
-
-    puts doc.class.name
-
     doc = doc.css("[class='structItem-title threadmark_depth0']")
 
     begin
       doc = doc.css("[class='structItem-title threadmark_depth0']")
+      Rails.logger.info('[StoryDownload] Found threadmarks page, parsing')
     rescue NoMethodError
       Rails.logger.error('[StoryDownload] Threadmarks CSS element not present.')
       return nil
     end
-
-    puts 'this is also okay'
 
     chapters = []
 

@@ -28,7 +28,9 @@ Chapter.create(
   body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
 )
 
-Story.create(
+empress = Story.create(
   thread_url: 'https://forums.spacebattles.com/threads/empress-in-azeroth-drowtales-warcraft-crossover.905910/',
   refresh_story: true
 )
+
+GenerateEpubJob.perform_now(empress.id)

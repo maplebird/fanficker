@@ -36,9 +36,11 @@
           <ul>
             <h5><%= link_to story.title, "/stories/#{story.id}" %></h5>
             Author: <%= story.author %><br>
-            <% unless story.download_complete %>
-              Story currently downloading. Check back in a minute.
+            Chapters: <%= story.chapters.count %><br>
+            <% if story.epub.attached? %>
+              <%= link_to "Download ePub", rails_blob_url(story.epub, disposition: "attachment") %><br>
             <% end %>
+            <% unless story.download_complete %>Story currently downloading. Check back in a minute.<% end %>
           </ul>
         </div>
       <% end %>
