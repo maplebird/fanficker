@@ -17,6 +17,8 @@ module Fanficker
     # the framework and any gems in your application.
     config.active_storage.service = :local
 
+    config.x.temp_storage_path = 'storage'
+
     old_logger = ActiveRecord::Base.logger
     ActiveRecord::Base.logger = nil
   end

@@ -38,7 +38,7 @@
             Author: <%= story.author %><br>
             Chapters: <%= story.chapters.count %><br>
             <% if story.epub.attached? %>
-              <%= link_to "Download ePub", rails_blob_url(story.epub, disposition: "attachment") %><br>
+              <%= link_to "Download ePub", rails_blob_url(story.epub, disposition: "attachment", filename: "story.epub") %><br>
             <% end %>
             <% unless story.download_complete %>Story currently downloading. Check back in a minute.<% end %>
           </ul>

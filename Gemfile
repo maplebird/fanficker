@@ -58,6 +58,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # Data storage
 gem 'activestorage'
 gem 'pg', '~> 1.2'
+gem 'aws-sdk-s3', require: false
 
 # Require old zip gem API for gepub to work
 gem 'gepub'

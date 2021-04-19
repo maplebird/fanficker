@@ -93,7 +93,7 @@ class GenerateEpubJob < ApplicationJob
   end
 
   def save_file
-    path = File.join(File.dirname(__FILE__), @filename)
+    path = File.join(File.dirname(Rails.configuration.x.temp_storage_path), @filename)
     @epub.generate_epub(path)
     @story.epub.attach(io: File.open(path), filename: path)
   end
