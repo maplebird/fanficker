@@ -8,6 +8,6 @@ class CreateChapters < ActiveRecord::Migration[6.0]
     end
 
     add_index(:chapters, [:id, :threadmark])
-    add_index(:chapters, :thread_url)
+    add_index(:chapters, :story_id)
   end
 end
