@@ -17,7 +17,6 @@ class StoriesController < ApplicationController
     if valid_url?(params[:thread_url])
       create_or_update_story(params)
       Rails.logger.info("[NewStory] Submitted with URL: #{params[:thread_url]}")
-      Rails.logger.info("[NewStory] Generate ePub: #{params[:generate_epub]}")
       redirect_to '/new?downloadInProgress'
     else
       Rails.logger.error("[NewStory] Submitted invalid URL: #{params[:thread_url]}")
@@ -33,7 +32,7 @@ class StoriesController < ApplicationController
   private
 
   def submit_story_params
-    params.require(:story).permit(:thread_url, :generate_epub)
+    params.require(:story).permit(:thread_url)
   end
 
   def create_or_update_story(params)
@@ -41,7 +40,6 @@ class StoriesController < ApplicationController
     story = Story.find_by(thread_url: thread_url) || Story.new(thread_url: thread_url)
     story.download_complete = false
     story.refresh_story = true
-    story.generate_epub = true if params[:generate_epub] == '1'
     story.save
   end
 

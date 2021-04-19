@@ -15,6 +15,15 @@ class DownloadStoryJob < ApplicationJob
     persist_chapters
 
     @story.update(download_complete: true)
+    trigger_generate_ebub
+  end
+
+  private
+
+  def trigger_generate_ebub
+    Rails.logger.info("[DownloadStory] Story id #{@story.id} queued up for ePub creation.")
+    GenerateEpubJob.perform_later(@story.id)
+    @story.update(generate_epub: false)
   end
 
   def persist_chapters

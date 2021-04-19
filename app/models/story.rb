@@ -4,10 +4,8 @@ class Story < ApplicationRecord
 
   before_validation :remove_trailing_slash
 
-  attr_accessor :refresh_story, :generate_epub
-
+  attr_accessor :refresh_story
   after_commit :download_story, if: [:persisted?, :refresh_story]
-  after_commit :generate_epub_job, if: [:generate_epub, :download_complete]
 
   private
 
@@ -16,15 +14,9 @@ class Story < ApplicationRecord
   end
 
   def download_story
-    Rails.logger.info("[Story] Story id #{self.id} queued up for download.")
-    self.refresh_story = false
+    Rails.logger.info("[Story] Story id #{id} queued up for download.")
     DownloadStoryJob.perform_later(id)
-  end
-
-  def generate_epub_job
-    Rails.logger.info("[Story] Story id #{self.id} queued up for ePub creation.")
-    self.generate_epub = false
-    GenerateEpubJob.perform_later(id)
+    self.refresh_story = false
   end
 
   def update_created

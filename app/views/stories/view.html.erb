@@ -8,6 +8,7 @@
 <h1><%= @story.title %></h1>
 <h2>By: <%= @story.author %></h2>
 <h3><%= @story.description %></h3>
+<h3><%= link_to "Original Story", @story.thread_url %></h3>
 
 <h2>Table of Contents</h2>
 <ul class="toc">
