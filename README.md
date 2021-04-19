@@ -13,6 +13,8 @@ Submit thread URL from a compatible message board on the main page.
 Currently only works with base URL.  I.e. https://forums.spacebattles.com/threads/maplebird-test.1234 will work,
 but https://forums.spacebattles.com/threads/maplebird-test.1234/page-30#post-75438880 will NOT work.
 
+If you want to refresh a previously downloaded story, submit its thread URL again on the main page.
+
 ## Requirements
 
 Standard rails app.

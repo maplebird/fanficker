@@ -34,9 +34,8 @@
       <% unless story.title.nil? %>
         <div class='cell'>
           <ul>
-            <p><h5><%= story.title %></h5></p>
-            By <%= story.author %><br>
-            <%= link_to "Read here", "/stories/#{story.id}"  %><br>
+            <h5><%= link_to story.title, "/stories/#{story.id}" %></h5>
+            Author: <%= story.author %><br>
             <% unless story.download_complete %>
               Story currently downloading. Check back in a minute.
             <% end %>

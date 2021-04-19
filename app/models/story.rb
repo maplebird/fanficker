@@ -4,8 +4,7 @@ class Story < ApplicationRecord
   before_validation :remove_trailing_slash
 
   attr_accessor :refresh_story
-  after_commit :download_story, on: :create, if: :refresh_story
-  after_commit :download_story, on: :update, if: :refresh_story
+  after_commit :download_story, if: [:persisted?, :refresh_story]
 
   private
 
