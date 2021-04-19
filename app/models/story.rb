@@ -3,10 +3,8 @@ class Story < ApplicationRecord
 
   before_validation :remove_trailing_slash
 
-  validates :thread_url, uniqueness: true, presence: true
-
   attr_accessor :refresh_story
-  after_commit :download_story, on: :create
+  after_commit :download_story, on: :create, if: :refresh_story
   after_commit :download_story, on: :update, if: :refresh_story
 
   private
@@ -16,6 +14,7 @@ class Story < ApplicationRecord
   end
 
   def download_story
+    self.refresh_story = false
     DownloadStoryJob.perform_later(self)
   end
 

@@ -47,6 +47,9 @@
         </div>
       <% end %>
     </div>
+    <div class='cell' id='downloadInProgress'>
+      <p >Downloading story now. Check out <%= link_to "index page", "/index" %> in a minute.</p>
+    </div>
     <div class='cell' id='invalidurl'>
       <p style="color:red">Error: invalid URL.</p>
     </div>
@@ -57,12 +60,19 @@
 </body>
 
 <script type="text/javascript">
-    var url = window.location.href;
-    var msg = document.getElementById('invalidurl');
+    let url = window.location.href;
+    const invalid = document.getElementById('invalidurl');
     if( url.search( 'invalidurl' ) > 0 ) {
-        msg.style.display = 'block';
+        invalid.style.display = 'block';
     } else{
-        msg.style.display = 'none'
+        invalid.style.display = 'none'
+    }
+
+    const downloading = document.getElementById('downloadInProgress');
+    if( url.search( 'downloadInProgress' ) > 0 ) {
+        downloading.style.display = 'block';
+    } else{
+        downloading.style.display = 'none'
     }
 </script>
 

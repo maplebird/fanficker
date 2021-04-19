@@ -13,6 +13,8 @@ class DownloadStoryJob < ApplicationJob
     set_story_metadata
     build_story_body
     persist_chapters
+
+    @story.update(download_complete: true)
   end
 
   def persist_chapters

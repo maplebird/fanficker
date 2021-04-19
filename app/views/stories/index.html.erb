@@ -31,13 +31,18 @@
 <div class="w3-display-middle">
   <div class='table'>
     <% @stories.each do |story| %>
-    <div class='cell'>
-      <ul>
-        <li><i><b><%= story.title %></b></i></li>
-        <li>By <%= story.author %></li>
-        <li><%= link_to "Read here", "/stories/#{story.id}"  %></li>
-      </ul>
-    </div>
+      <% unless story.title.nil? %>
+        <div class='cell'>
+          <ul>
+            <p><h5><%= story.title %></h5></p>
+            By <%= story.author %><br>
+            <%= link_to "Read here", "/stories/#{story.id}"  %><br>
+            <% unless story.download_complete %>
+              Story currently downloading. Check back in a minute.
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
     <% end %>
   </div>
 </div>

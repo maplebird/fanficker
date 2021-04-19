@@ -13,7 +13,7 @@ class StoriesController < ApplicationController
     if valid_url?(params[:thread_url])
       create_or_update_story(params)
       Rails.logger.info("[NewStory] Submitted with URL: #{params[:thread_url]}")
-      redirect_to '/index'
+      redirect_to '/new?downloadInProgress'
     else
       Rails.logger.error("[NewStory] Submitted invalid URL: #{params[:thread_url]}")
       redirect_to '/new?invalidurl'
@@ -33,6 +33,7 @@ class StoriesController < ApplicationController
 
   def create_or_update_story(params)
     story = Story.find_by(params) || Story.new(params)
+    story.download_complete = false
     story.refresh_story = true
     story.save
   end
