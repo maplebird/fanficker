@@ -4,6 +4,7 @@
 *.epub
 *.mobi
 *.html
+*.xhtml
 .DS_Store
 
 # Development stuff
@@ -23,3 +24,5 @@
 node_modules
 .generated_user_seeds
 .generators
+
+converter.rb

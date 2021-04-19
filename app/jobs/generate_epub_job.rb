@@ -1,8 +1,8 @@
 class GenerateEpubJob < ApplicationJob
   queue_as :default
 
-  def perform(story)
-    @story = story
+  def perform(story_id)
+    @story = Story.find(story_id)
     @chapters = Chapter.where(story_id: @story.id)
     Rails.logger.info("[GenerateEpub] Generating ePub for #{@story.title}")
 
@@ -12,8 +12,7 @@ class GenerateEpubJob < ApplicationJob
     add_metadata
     generate_chapter_bodies
     add_chapters
-
-    @epub
+    save_file
   end
 
   def add_metadata
@@ -55,15 +54,21 @@ class GenerateEpubJob < ApplicationJob
   end
 
   def generate_body(chapter)
-    body = StringIO.new(<<-CHAPTER_DIVIDER)
-      <html xmlns="http://www.w3.org/1999/xhtml">
-      <head><title>#{chapter.title}</title></head>
+    html = "<html><head>
+      <title>#{chapter.title}</title>
+      </head>
       <body>
       #{chapter.body.html_safe}
       </body>
-    CHAPTER_DIVIDER
+      </html>"
 
-    body
+    body = convert_to_xhtml(html)
+    StringIO.new(body)
+  end
+
+  def convert_to_xhtml(html)
+    doc = Nokogiri::HTML.parse(html)
+    doc.to_xhtml
   end
 
   def generate_chapter_bodies
@@ -88,7 +93,8 @@ class GenerateEpubJob < ApplicationJob
   end
 
   def save_file
-    epubname = File.join(File.dirname(__FILE__), @filename)
-    @epub.generate_epub(epubname)
+    path = File.join(File.dirname(__FILE__), @filename)
+    @epub.generate_epub(path)
+    @story.epub.attach(io: File.open(path), filename: path)
   end
 end

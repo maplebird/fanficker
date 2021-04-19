@@ -1,5 +1,6 @@
 class Story < ApplicationRecord
   has_many :chapters
+  has_one_attached :epub
 
   before_validation :remove_trailing_slash
 

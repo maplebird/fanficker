@@ -1,7 +1,7 @@
 class CreateChapters < ActiveRecord::Migration[6.0]
   def change
     create_table :chapters do |t|
-      t.string :thread_url
+      t.integer :story_id
       t.string :title
       t.integer :threadmark
       t.text :body
