@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<head>
 <title>W3.CSS Template</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,13 +11,10 @@
   body,h1 {font-family: "Raleway", sans-serif}
   body, html {height: 100%}
 </style>
-<head>
-  <title>Fanficker</title>
-  <%= csrf_meta_tags %>
-  <%= csp_meta_tag %>
-
-  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-  <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+<title>Fanficker</title>
+<%= csrf_meta_tags %>
+<%= csp_meta_tag %>
+<%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
 </head>
 
 <body>
@@ -57,9 +55,6 @@
   </div>
 </div>
 
-
-</body>
-
 <script type="text/javascript">
     let url = window.location.href;
     const invalid = document.getElementById('invalidurl');
@@ -77,4 +72,5 @@
     }
 </script>
 
+</body>
 </html>
