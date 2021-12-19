@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+  fanficker:
+    image: fanficker
+    networks:
+      - fanficker
+    ports:
+      - 3000:3000
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:12
+    networks:
+      - fanficker
+    ports:
+      - 15432:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: fanficker
+      POSTGRES_PASSWORD: fanficker
+      POSTGRES_DATABASE: fanficker
+
+networks:
+  fanficker:
+
+volumes:
+  db-data:
